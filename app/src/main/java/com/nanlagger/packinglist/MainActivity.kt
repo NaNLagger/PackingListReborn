@@ -1,7 +1,8 @@
-package packinglist.nanlagger.com.packinglistreborn
+package com.nanlagger.packinglist
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import packinglist.nanlagger.com.packinglistreborn.R
 
 class MainActivity : AppCompatActivity() {
 
