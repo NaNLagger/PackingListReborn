@@ -41,3 +41,4 @@ captures/
 .idea/libraries
 .idea/caches
 .idea/vcs.xml
+.idea/kotlinc.xml
