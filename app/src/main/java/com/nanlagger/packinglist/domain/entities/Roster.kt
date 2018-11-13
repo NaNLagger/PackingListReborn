@@ -2,8 +2,9 @@ package com.nanlagger.packinglist.domain.entities
 
 data class Roster(
         val id: Long,
-        val name: String,
-        val items: List<RosterItem>
+        var name: String,
+        var priority: Int,
+        var items: List<RosterItem>
 ) {
     val checkedCount = items.count { it.checked }
     val totalCount = items.size

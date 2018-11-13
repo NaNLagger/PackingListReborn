@@ -9,7 +9,7 @@ import android.support.v4.app.FragmentTransaction
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.nanlagger.packinglist.R
-import com.nanlagger.packinglist.ui.rosters.RostersListFragment
+import com.nanlagger.packinglist.ui.rosters.RosterListFragment
 import ru.terrakok.cicerone.android.SupportAppNavigator
 import ru.terrakok.cicerone.commands.Command
 
@@ -27,7 +27,7 @@ class AppNavigator(
     override fun createActivityIntent(screenKey: String, data: Any?): Intent? = null
 
     override fun createFragment(screenKey: String, data: Any?): Fragment? = when (screenKey) {
-        Screens.ROSTERS_LIST_SCREEN -> RostersListFragment.newInstance()
+        Screens.ROSTERS_LIST_SCREEN -> RosterListFragment.newInstance()
         else -> null
     }
 
