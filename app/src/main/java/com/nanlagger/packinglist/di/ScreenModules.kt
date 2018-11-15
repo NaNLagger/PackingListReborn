@@ -24,7 +24,7 @@ val mainModule = Kodein.Module("main") {
 
 val rosterListModule = Kodein.Module("rosterList") {
 
-    bind<RosterInteractor>() with provider { RosterInteractor() }
+    bind<RosterInteractor>() with provider { RosterInteractor(instance(), instance("UI_THREAD"), instance("IO_THREAD")) }
 
     bind<RosterListViewModel.Factory>() with provider { RosterListViewModel.Factory(instance(), instance()) }
 

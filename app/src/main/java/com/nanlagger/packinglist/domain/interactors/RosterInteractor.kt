@@ -1,26 +1,21 @@
 package com.nanlagger.packinglist.domain.interactors
 
 import com.nanlagger.packinglist.domain.entities.Roster
+import com.nanlagger.packinglist.domain.repository.RosterRepository
 import io.reactivex.Completable
-import io.reactivex.Observable
+import io.reactivex.Flowable
+import io.reactivex.Scheduler
 
-class RosterInteractor() {
+class RosterInteractor(
+        private val rosterRepository: RosterRepository,
+        private val mainScheduler: Scheduler,
+        private val ioScheduler: Scheduler
+) {
 
-    fun getRosters(): Observable<List<Roster>> {
-        val listOf = listOf(
-                Roster(0, "Test Roster 1", 0, emptyList()),
-                Roster(1, "Test Roster 2", 1, emptyList()),
-                Roster(2, "Test Roster 3", 2, emptyList()),
-                Roster(3, "Test Roster 4", 3, emptyList()),
-                Roster(4, "Test Roster 5", 4, emptyList()),
-                Roster(5, "Test Roster 6", 5, emptyList()),
-                Roster(6, "Test Roster 7", 6, emptyList()),
-                Roster(7, "Test Roster 8", 7, emptyList()),
-                Roster(8, "Test Roster 9", 8, emptyList()),
-                Roster(9, "Test Roster 10", 9, emptyList()),
-                Roster(10, "Test Roster 11", 10, emptyList())
-        )
-        return Observable.just(listOf)
+    fun getRosters(): Flowable<List<Roster>> {
+        return rosterRepository.getRosters()
+                .subscribeOn(ioScheduler)
+                .observeOn(mainScheduler)
     }
 
     fun changePriority(rosters: List<Roster>): Completable {
@@ -28,7 +23,9 @@ class RosterInteractor() {
     }
 
     fun addRoster(roster: Roster): Completable {
-        return Completable.complete()
+        return rosterRepository.addRoster(roster)
+                .subscribeOn(ioScheduler)
+                .observeOn(mainScheduler)
     }
 
     fun deleteRoster(id: Long): Completable {

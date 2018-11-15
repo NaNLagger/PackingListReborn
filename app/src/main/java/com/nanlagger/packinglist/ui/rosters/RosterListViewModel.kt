@@ -25,6 +25,8 @@ class RosterListViewModel(
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private var firstAttach = true
 
+    private var rosterIndex = 0
+
     fun init() {
         if (firstAttach) {
             loadRosters()
@@ -33,6 +35,10 @@ class RosterListViewModel(
     }
 
     fun newRoster() {
+        rosterInteractor.addRoster(Roster(0, "Roster $rosterIndex", rosterIndex, emptyList()))
+                .subscribe({}, { error -> Timber.e(error) })
+                .addTo(compositeDisposable)
+        rosterIndex++
     }
 
     fun openRoster(roster: Roster) {
@@ -49,9 +55,9 @@ class RosterListViewModel(
     fun saveOrder() {
         val changedRosters = rosterItems
                 .asSequence()
-                .filterIndexed { index, roster -> roster.priority != index }
+                .filterIndexed { index, roster -> roster.priority != rosterItems.size - index }
                 .mapIndexed { index, roster ->
-                    roster.priority = index
+                    roster.priority = rosterItems.size - index
                     roster
                 }
                 .toList()
@@ -64,9 +70,9 @@ class RosterListViewModel(
 
     private fun loadRosters() {
         rosterInteractor.getRosters()
-                .subscribe({
-                    rosterItems = it.toMutableList()
-                    rosterListLiveData.value = it
+                .subscribe({ rosters ->
+                    rosterItems = rosters.asSequence().sortedByDescending { it.priority }.toMutableList()
+                    rosterListLiveData.value = rosterItems.toList()
                 }, { error -> Timber.e(error)})
                 .addTo(compositeDisposable)
     }

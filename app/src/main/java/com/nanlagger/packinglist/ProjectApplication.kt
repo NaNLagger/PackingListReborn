@@ -3,6 +3,7 @@ package com.nanlagger.packinglist
 import android.app.Application
 import com.nanlagger.packinglist.di.databaseModule
 import com.nanlagger.packinglist.di.navigationModule
+import com.nanlagger.packinglist.di.repositoryModule
 import com.nanlagger.packinglist.di.schedulerModule
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
@@ -15,7 +16,7 @@ class ProjectApplication : Application(), KodeinAware {
         bind() from instance(this@ProjectApplication as Application)
 
         import(databaseModule)
-//        import(repositoryModule)
+        import(repositoryModule)
         import(navigationModule)
         import(schedulerModule)
     }
