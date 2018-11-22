@@ -9,4 +9,8 @@ data class Roster(
     val checkedCount = items.count { it.checked }
     val totalCount = items.size
     val progress = ((checkedCount.toFloat() / totalCount) * 100).toInt()
+
+    companion object {
+        val EMPTY = Roster(0L, "", 0, emptyList())
+    }
 }

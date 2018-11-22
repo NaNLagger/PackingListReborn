@@ -5,6 +5,7 @@ import android.arch.persistence.room.Room
 import com.nanlagger.packinglist.data.database.AppDatabase
 import com.nanlagger.packinglist.data.database.dao.RosterDao
 import com.nanlagger.packinglist.data.database.dao.RosterItemDao
+import com.nanlagger.packinglist.domain.repository.RosterItemRepository
 import com.nanlagger.packinglist.domain.repository.RosterRepository
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -50,4 +51,6 @@ val schedulerModule = Kodein.Module("SchedulerModule") {
 val repositoryModule = Kodein.Module("repositoryModule") {
 
     bind<RosterRepository>() with singleton { RosterRepository(instance()) }
+
+    bind<RosterItemRepository>() with singleton { RosterItemRepository(instance()) }
 }

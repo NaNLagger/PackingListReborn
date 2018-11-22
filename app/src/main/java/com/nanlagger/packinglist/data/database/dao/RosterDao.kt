@@ -1,8 +1,6 @@
 package com.nanlagger.packinglist.data.database.dao
 
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Query
-import android.arch.persistence.room.Transaction
+import android.arch.persistence.room.*
 import com.nanlagger.packinglist.data.database.entities.RosterEntity
 import com.nanlagger.packinglist.data.database.entities.RosterItemEntity
 import com.nanlagger.packinglist.data.database.entities.RosterWithInfoEntity
@@ -27,4 +25,12 @@ interface RosterDao : BaseDao<RosterEntity> {
     @Transaction
     @Query("SELECT * FROM ${RosterEntity.TABLE_NAME}")
     fun getRostersWithItems(): Flowable<List<RosterWithItemsEntity>>
+
+    @Transaction
+    @Query("SELECT * FROM ${RosterEntity.TABLE_NAME} WHERE ${RosterEntity.ID} = :id")
+    fun getRosterWithItems(id: Long): Flowable<RosterWithItemsEntity>
+
+    @Update
+    fun updateAll(rosterEntities: List<RosterEntity>)
+
 }

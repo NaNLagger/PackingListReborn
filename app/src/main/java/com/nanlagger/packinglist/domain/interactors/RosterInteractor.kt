@@ -12,6 +12,12 @@ class RosterInteractor(
         private val ioScheduler: Scheduler
 ) {
 
+    fun getRoster(id: Long): Flowable<Roster> {
+        return rosterRepository.getRoster(id)
+                .subscribeOn(ioScheduler)
+                .observeOn(mainScheduler)
+    }
+
     fun getRosters(): Flowable<List<Roster>> {
         return rosterRepository.getRosters()
                 .subscribeOn(ioScheduler)
@@ -19,7 +25,9 @@ class RosterInteractor(
     }
 
     fun changePriority(rosters: List<Roster>): Completable {
-        return Completable.complete()
+        return rosterRepository.updateRosters(rosters)
+                .subscribeOn(ioScheduler)
+                .observeOn(mainScheduler)
     }
 
     fun addRoster(roster: Roster): Completable {
@@ -29,6 +37,8 @@ class RosterInteractor(
     }
 
     fun deleteRoster(id: Long): Completable {
-        return Completable.complete()
+        return rosterRepository.deleteRoster(id)
+                .subscribeOn(ioScheduler)
+                .observeOn(mainScheduler)
     }
 }

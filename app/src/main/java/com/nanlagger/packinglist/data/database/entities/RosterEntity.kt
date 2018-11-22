@@ -7,9 +7,9 @@ import com.nanlagger.packinglist.data.database.entities.RosterEntity.Companion.T
 
 @Entity(tableName = TABLE_NAME)
 data class RosterEntity(
-        @PrimaryKey(autoGenerate = true) @ColumnInfo(name = ID) var id: Long,
-        @ColumnInfo(name = NAME) var name: String,
-        @ColumnInfo(name = PRIORITY) var priority: Int
+        @PrimaryKey(autoGenerate = true) @ColumnInfo(name = ID) var id: Long = 0,
+        @ColumnInfo(name = NAME) var name: String = "",
+        @ColumnInfo(name = PRIORITY) var priority: Int = 0
 ) {
 
     companion object {

@@ -13,7 +13,7 @@ class MainViewModel(
 
     fun init() {
         if (firstAttach) {
-            router.navigateTo(Screens.ROSTERS_LIST_SCREEN)
+            router.newRootScreen(Screens.ROSTERS_LIST_SCREEN)
         }
         firstAttach = false
     }

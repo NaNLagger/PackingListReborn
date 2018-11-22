@@ -13,7 +13,12 @@ class RosterRepository(
 
     fun getRosters(): Flowable<List<Roster>> {
         return rosterDao.getRostersWithItems()
-                .map { rosterEntities -> rosterEntities.map { entity -> Roster(entity.roster.id, entity.roster.name, entity.roster.priority, entity.items.map { RosterItem(it.id, it.name, it.rosterId, it.isChecked) }) } }
+                .map { rosterEntities ->
+                    rosterEntities.map { entity ->
+                        Roster(entity.roster.id, entity.roster.name, entity.roster.priority, entity.items.map {
+                            RosterItem(it.id, it.name, it.rosterId, it.isChecked) })
+                    }
+                }
     }
 
     fun addRoster(roster: Roster): Completable {
@@ -21,6 +26,24 @@ class RosterRepository(
     }
 
     fun deleteRoster(id: Long): Completable {
-        return Completable.complete()
+        return Completable.fromCallable { rosterDao.delete(RosterEntity(id)) }
+    }
+
+    fun updateRosters(rosters: List<Roster>): Completable {
+        val rosterEntities = rosters.map { roster -> RosterEntity(roster.id, roster.name, roster.priority) }
+        return Completable.fromCallable { rosterDao.updateAll(rosterEntities) }
+    }
+
+    fun getRoster(id: Long): Flowable<Roster> {
+        return rosterDao.getRosterWithItems(id)
+                .map { rosterWithItemsEntity ->
+                    Roster(rosterWithItemsEntity.roster.id,
+                            rosterWithItemsEntity.roster.name,
+                            rosterWithItemsEntity.roster.priority,
+                            rosterWithItemsEntity.items.map {
+                                RosterItem(it.id, it.name, it.rosterId, it.isChecked)
+                            }
+                    )
+                }
     }
 }
