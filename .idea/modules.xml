@@ -4,6 +4,10 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/PackingListReborn.iml" filepath="$PROJECT_DIR$/PackingListReborn.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/database/database.iml" filepath="$PROJECT_DIR$/database/database.iml" />
+      <module fileurl="file://$PROJECT_DIR$/note/note.iml" filepath="$PROJECT_DIR$/note/note.iml" />
+      <module fileurl="file://$PROJECT_DIR$/rosters/rosters.iml" filepath="$PROJECT_DIR$/rosters/rosters.iml" />
+      <module fileurl="file://$PROJECT_DIR$/utils/utils.iml" filepath="$PROJECT_DIR$/utils/utils.iml" />
     </modules>
   </component>
 </project>

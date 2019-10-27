@@ -17,39 +17,4 @@
         <item>#33b5e5</item>
     </string-array>
 
-    <string-array name="progress_color_values" translatable="false">
-        <item>#dd0000</item>
-        <item>#dd3907</item>
-        <item>#dd5c03</item>
-        <item>#dd9833</item>
-        <item>#f7ce4d</item>
-        <item>#f7f12f</item>
-        <item>#d7f86e</item>
-        <item>#c3f35d</item>
-        <item>#a7dd6c</item>
-        <item>#71dd53</item>
-        <item>#05d200</item>
-    </string-array>
-
-    <string-array name="progress_color_values_new" translatable="false">
-        <item>#e73336</item>
-        <item>#dc692d</item>
-        <item>#f58e1d</item>
-        <item>#f8c016</item>
-        <item>#fbf207</item>
-        <item>#d6e315</item>
-        <item>#a8d727</item>
-        <item>#7acf2d</item>
-        <item>#58bd3d</item>
-        <item>#2FB341</item>
-        <item>#06a555</item>
-    </string-array>
-
-    <string-array name="progress_color_short_values" translatable="false">
-        <item>#d85350</item>
-        <item>#f0ac4f</item>
-        <item>#5bbfdd</item>
-        <item>#5cb75c</item>
-    </string-array>
-
 </resources>

@@ -23,11 +23,29 @@
         <item name="android:textColor">@color/colorPrimaryText</item>
     </style>
 
+    <style name="EditToolbarTheme" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:textColorPrimary">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="fontFamily">@font/roboto_medium</item>
+    </style>
+
+    <style name="EditPopupToolbarTheme" parent="ThemeOverlay.AppCompat.Light">
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/colorPrimaryText</item>
+        <item name="fontFamily">@font/roboto_medium</item>
+    </style>
+
     <!--STYLES-->
     <style name="ToolbarStyle" parent="Base.Widget.AppCompat.ActionBar">
         <item name="android:background">@color/colorPrimary</item>
         <item name="android:theme">@style/ToolbarTheme</item>
         <item name="popupTheme">@style/PopupToolbarTheme</item>
+    </style>
+
+    <style name="EditToolbarStyle" parent="Base.Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/white</item>
+        <item name="android:theme">@style/EditToolbarTheme</item>
+        <item name="popupTheme">@style/EditPopupToolbarTheme</item>
     </style>
 
 

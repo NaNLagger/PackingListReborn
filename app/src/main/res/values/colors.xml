@@ -18,4 +18,9 @@
     <color name="contentBackground">#ffffff</color>
     <color name="contentBackgroundDark">#EBEBEB</color>
 
+    <color name="deleteBackground">#e52121</color>
+
+    <color name="progressBackground">#37474f</color>
+    <color name="progressOutline">#1e88e5</color>
+
 </resources>

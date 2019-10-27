@@ -1,31 +1,39 @@
 package com.nanlagger.packinglist
 
 import android.app.Application
-import com.nanlagger.packinglist.di.databaseModule
-import com.nanlagger.packinglist.di.navigationModule
-import com.nanlagger.packinglist.di.repositoryModule
-import com.nanlagger.packinglist.di.schedulerModule
-import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
-import org.kodein.di.generic.bind
-import org.kodein.di.generic.instance
+import com.nanlagger.packinglist.di.Scopes
+import com.nanlagger.packinglist.di.modules.DatabaseModule
+import com.nanlagger.packinglist.di.modules.NavigationModule
+import com.nanlagger.packinglist.di.modules.ProjectModule
 import timber.log.Timber
+import toothpick.Toothpick
+import toothpick.configuration.Configuration
 
-class ProjectApplication : Application(), KodeinAware {
-    override val kodein: Kodein = Kodein.lazy {
-        bind() from instance(this@ProjectApplication as Application)
-
-        import(databaseModule)
-        import(repositoryModule)
-        import(navigationModule)
-        import(schedulerModule)
-    }
+class ProjectApplication : Application() {
 
     override fun onCreate() {
         super. onCreate()
-        kodeinTrigger?.trigger()
+        initToothpick()
+        initTimber()
+        Toothpick.openScopes(Scopes.APP_SCOPE)
+                .installModules(
+                        ProjectModule(this),
+                        DatabaseModule(),
+                        NavigationModule()
+                )
+    }
+
+    private fun initTimber() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
+        }
+    }
+
+    private fun initToothpick() {
+        if (BuildConfig.DEBUG) {
+            Toothpick.setConfiguration(Configuration.forDevelopment().preventMultipleRootScopes())
+        } else {
+            Toothpick.setConfiguration(Configuration.forProduction())
         }
     }
 }
