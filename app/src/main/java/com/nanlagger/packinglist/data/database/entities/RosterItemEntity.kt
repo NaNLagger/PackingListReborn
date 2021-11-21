@@ -1,25 +1,25 @@
 package com.nanlagger.packinglist.data.database.entities
 
-import android.arch.persistence.room.ColumnInfo
-import android.arch.persistence.room.Entity
-import android.arch.persistence.room.ForeignKey
-import android.arch.persistence.room.PrimaryKey
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.PrimaryKey
 import com.nanlagger.packinglist.data.database.entities.RosterItemEntity.Companion.TABLE_NAME
 
 @Entity(
-        tableName = TABLE_NAME,
-        foreignKeys = [ForeignKey(
-                entity = RosterEntity::class,
-                parentColumns = [RosterEntity.ID],
-                childColumns = [RosterItemEntity.ROSTER_ID],
-                onDelete = ForeignKey.CASCADE
-        )]
+    tableName = TABLE_NAME,
+    foreignKeys = [ForeignKey(
+        entity = RosterEntity::class,
+        parentColumns = [RosterEntity.ID],
+        childColumns = [RosterItemEntity.ROSTER_ID],
+        onDelete = ForeignKey.CASCADE
+    )]
 )
 data class RosterItemEntity(
-        @PrimaryKey(autoGenerate = true) @ColumnInfo(name = ID) var id: Long = 0L,
-        @ColumnInfo(name = NAME) var name: String = "",
-        @ColumnInfo(name = ROSTER_ID) var rosterId: Long = 0L,
-        @ColumnInfo(name = IS_CHECKED) var isChecked: Boolean = false
+    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = ID) var id: Long = 0L,
+    @ColumnInfo(name = NAME) var name: String = "",
+    @ColumnInfo(name = ROSTER_ID) var rosterId: Long = 0L,
+    @ColumnInfo(name = IS_CHECKED) var isChecked: Boolean = false
 ) {
 
     companion object {

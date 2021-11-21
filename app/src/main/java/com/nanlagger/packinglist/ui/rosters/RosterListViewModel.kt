@@ -1,20 +1,23 @@
 package com.nanlagger.packinglist.ui.rosters
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.github.terrakok.cicerone.Router
 import com.nanlagger.packinglist.domain.entities.Roster
 import com.nanlagger.packinglist.domain.interactors.RosterInteractor
+import com.nanlagger.packinglist.navigation.RosterScreen
 import com.nanlagger.packinglist.navigation.Screens
 import com.nanlagger.packinglist.tools.addTo
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import ru.terrakok.cicerone.Router
+import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
 class RosterListViewModel(
-        private val router: Router,
-        private val rosterInteractor: RosterInteractor
+    private val router: Router,
+    private val rosterInteractor: RosterInteractor
 ) : ViewModel() {
 
     val rosterList: LiveData<List<Roster>>
@@ -34,14 +37,16 @@ class RosterListViewModel(
     }
 
     fun newRoster() {
-        val rosterIndex = (rosterItems.maxBy { it.priority }?.priority ?: 0) + 1
+        val rosterIndex = (rosterItems.maxByOrNull { it.priority }?.priority ?: 0) + 1
         rosterInteractor.addRoster(Roster(0, "Roster $rosterIndex", rosterIndex, emptyList()))
-                .subscribe({}, { error -> Timber.e(error) })
-                .addTo(compositeDisposable)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({}, { error -> Timber.e(error) })
+            .addTo(compositeDisposable)
     }
 
     fun openRoster(roster: Roster) {
-        router.navigateTo(Screens.ROSTER_SCREEN, roster.id)
+        router.navigateTo(RosterScreen(roster.id))
     }
 
     fun changePriority(oldPosition: Int, newPosition: Int) {
@@ -53,34 +58,40 @@ class RosterListViewModel(
 
     fun saveOrder() {
         val changedRosters = rosterItems
-                .filterIndexed { index, roster ->
-                    val nIndex = rosterItems.size - index
-                    val isChanged = roster.priority != nIndex
-                    if(isChanged) {
-                        roster.priority = nIndex
-                    }
-                    isChanged
+            .filterIndexed { index, roster ->
+                val nIndex = rosterItems.size - index
+                val isChanged = roster.priority != nIndex
+                if (isChanged) {
+                    roster.priority = nIndex
                 }
+                isChanged
+            }
         if (changedRosters.isNotEmpty()) {
             rosterInteractor.changePriority(changedRosters)
-                    .subscribe({}, { error -> Timber.e(error)})
-                    .addTo(compositeDisposable)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({}, { error -> Timber.e(error) })
+                .addTo(compositeDisposable)
         }
     }
 
     fun deleteRoster(position: Int) {
         rosterInteractor.deleteRoster(rosterItems[position].id)
-                .subscribe({}, { error -> Timber.e(error)})
-                .addTo(compositeDisposable)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({}, { error -> Timber.e(error) })
+            .addTo(compositeDisposable)
     }
 
     private fun loadRosters() {
         rosterInteractor.getRosters()
-                .subscribe({ rosters ->
-                    rosterItems = rosters.asSequence().sortedByDescending { it.priority }.toMutableList()
-                    rosterListLiveData.value = rosterItems.toList()
-                }, { error -> Timber.e(error)})
-                .addTo(compositeDisposable)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ rosters ->
+                rosterItems = rosters.asSequence().sortedByDescending { it.priority }.toMutableList()
+                rosterListLiveData.value = rosterItems.toList()
+            }, { error -> Timber.e(error) })
+            .addTo(compositeDisposable)
     }
 
     override fun onCleared() {

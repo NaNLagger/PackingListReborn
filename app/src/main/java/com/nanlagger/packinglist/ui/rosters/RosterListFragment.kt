@@ -1,38 +1,45 @@
 package com.nanlagger.packinglist.ui.rosters
 
-import android.arch.lifecycle.Observer
 import android.os.Bundle
-import android.support.v7.util.DiffUtil
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.View
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.nanlagger.packinglist.R
-import com.nanlagger.packinglist.di.rosterListModule
+import com.nanlagger.packinglist.databinding.FragmentRosterListBinding
+import com.nanlagger.packinglist.di.RosterListComponentHolder
+import com.nanlagger.packinglist.tools.viewBinding
+import com.nanlagger.packinglist.ui.common.BaseActivity
 import com.nanlagger.packinglist.ui.common.BaseFragment
 import com.nanlagger.packinglist.ui.rosters.adapter.RosterAdapter
-import kotlinx.android.synthetic.main.fragment_roster_list.*
-import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.closestKodein
-import org.kodein.di.generic.bind
-import org.kodein.di.generic.instance
+import java.util.*
+import javax.inject.Inject
 
-class RosterListFragment: BaseFragment(), KodeinAware {
+class RosterListFragment : BaseFragment() {
 
-    private val _parentKodein by closestKodein { context!! }
-    override val kodein: Kodein = Kodein.lazy {
-        extend(_parentKodein)
-        bind() from instance(this@RosterListFragment)
-        import(rosterListModule)
-    }
     override val layoutId: Int
         get() = R.layout.fragment_roster_list
 
-    private val viewModel: RosterListViewModel by instance()
+    @Inject
+    lateinit var factory: RosterListViewModel.Factory
+
+    private val viewModel: RosterListViewModel by viewModels { factory }
+    private val binding: FragmentRosterListBinding by viewBinding(FragmentRosterListBinding::bind)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        RosterListComponentHolder
+            .createOrGetComponent(screenName, parentScreenName)
+            .inject(this)
+        super.onCreate(savedInstanceState)
+    }
+
     private val rosterAdapter by lazy {
         RosterAdapter(viewModel::openRoster, itemTouchHelper)
     }
+
     private val dragAndDropCallback = object : ItemTouchHelper.Callback() {
         override fun isLongPressDragEnabled(): Boolean {
             return false
@@ -68,12 +75,12 @@ class RosterListFragment: BaseFragment(), KodeinAware {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        recyclerRosters.layoutManager = LinearLayoutManager(context)
-        recyclerRosters.adapter = rosterAdapter
-        itemTouchHelper.attachToRecyclerView(recyclerRosters)
-        buttonNewRoster.setOnClickListener { viewModel.newRoster() }
+        binding.recyclerRosters.layoutManager = LinearLayoutManager(context)
+        binding.recyclerRosters.adapter = rosterAdapter
+        itemTouchHelper.attachToRecyclerView(binding.recyclerRosters)
+        binding.buttonNewRoster.setOnClickListener { viewModel.newRoster() }
 
-        viewModel.rosterList.observe(this, Observer { rostersList ->
+        viewModel.rosterList.observe(viewLifecycleOwner, Observer { rostersList ->
             if (rostersList == null)
                 return@Observer
             val diffResult = DiffUtil.calculateDiff(RosterDiff(rosterAdapter.items, rostersList))

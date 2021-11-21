@@ -1,19 +1,20 @@
 package com.nanlagger.packinglist.ui.main
 
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.github.terrakok.cicerone.Router
+import com.nanlagger.packinglist.navigation.RosterListScreen
 import com.nanlagger.packinglist.navigation.Screens
-import ru.terrakok.cicerone.Router
 
 class MainViewModel(
-        private val router: Router
+    private val router: Router
 ) : ViewModel() {
 
     private var firstAttach = true
 
     fun init() {
         if (firstAttach) {
-            router.newRootScreen(Screens.ROSTERS_LIST_SCREEN)
+            router.newRootScreen(RosterListScreen)
         }
         firstAttach = false
     }

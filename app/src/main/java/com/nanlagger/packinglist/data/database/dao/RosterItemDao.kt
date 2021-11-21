@@ -1,7 +1,7 @@
 package com.nanlagger.packinglist.data.database.dao
 
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Query
+import androidx.room.Dao
+import androidx.room.Query
 import com.nanlagger.packinglist.data.database.entities.RosterItemEntity
 import io.reactivex.Flowable
 
