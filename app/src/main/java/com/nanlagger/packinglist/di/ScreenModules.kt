@@ -1,52 +1,44 @@
 package com.nanlagger.packinglist.di
 
-import android.arch.lifecycle.ViewModelProviders
+import com.github.terrakok.cicerone.Router
 import com.nanlagger.packinglist.domain.interactors.RosterInteractor
 import com.nanlagger.packinglist.domain.interactors.RosterItemInteractor
-import com.nanlagger.packinglist.ui.main.MainActivity
 import com.nanlagger.packinglist.ui.main.MainViewModel
-import com.nanlagger.packinglist.ui.roster.RosterFragment
 import com.nanlagger.packinglist.ui.roster.RosterViewModel
-import com.nanlagger.packinglist.ui.rosters.RosterListFragment
 import com.nanlagger.packinglist.ui.rosters.RosterListViewModel
-import com.nanlagger.packinglist.ui.rosters.adapter.RosterAdapter
-import org.kodein.di.Kodein
-import org.kodein.di.generic.bind
-import org.kodein.di.generic.instance
-import org.kodein.di.generic.provider
+import dagger.Module
+import dagger.Provides
 
-val mainModule = Kodein.Module("main") {
+@Module
+class MainModule {
 
-    bind<MainViewModel.Factory>() with provider { MainViewModel.Factory(instance()) }
-
-    bind<MainViewModel>() with provider {
-        ViewModelProviders.of(instance<MainActivity>(), instance<MainViewModel.Factory>())
-                .get(MainViewModel::class.java)
+    @Provides
+    @MainScope
+    fun provideMainViewModelFactory(router: Router): MainViewModel.Factory {
+        return MainViewModel.Factory(router)
     }
 }
 
-val rosterListModule = Kodein.Module("rosterList") {
+@Module
+class RosterListModule {
 
-    bind<RosterInteractor>() with provider { RosterInteractor(instance(), instance("UI_THREAD"), instance("IO_THREAD")) }
-
-    bind<RosterListViewModel.Factory>() with provider { RosterListViewModel.Factory(instance(), instance()) }
-
-    bind<RosterListViewModel>() with provider {
-        ViewModelProviders.of(instance<RosterListFragment>(), instance<RosterListViewModel.Factory>())
-                .get(RosterListViewModel::class.java)
+    @Provides
+    @ScreenScope
+    fun provideRosterListViewModelFactory(router: Router, interactor: RosterInteractor): RosterListViewModel.Factory {
+        return RosterListViewModel.Factory(router, interactor)
     }
 }
 
-val rosterModule = Kodein.Module("roster") {
+@Module
+class RosterModule {
 
-    bind<RosterInteractor>() with provider { RosterInteractor(instance(), instance("UI_THREAD"), instance("IO_THREAD")) }
-
-    bind<RosterItemInteractor>() with provider { RosterItemInteractor(instance(), instance("UI_THREAD"), instance("IO_THREAD")) }
-
-    bind<RosterViewModel.Factory>() with provider { RosterViewModel.Factory(instance(), instance(), instance()) }
-
-    bind<RosterViewModel>() with provider {
-        ViewModelProviders.of(instance<RosterFragment>(), instance<RosterViewModel.Factory>())
-                .get(RosterViewModel::class.java)
+    @Provides
+    @ScreenScope
+    fun provideRosterViewModelFactory(
+        router: Router,
+        rosterInteractor: RosterInteractor,
+        rosterItemInteractor: RosterItemInteractor
+    ): RosterViewModel.Factory {
+        return RosterViewModel.Factory(router, rosterInteractor, rosterItemInteractor)
     }
 }

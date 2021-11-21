@@ -1,7 +1,7 @@
 package com.nanlagger.packinglist.data.database
 
-import android.arch.persistence.room.Database
-import android.arch.persistence.room.RoomDatabase
+import androidx.room.Database
+import androidx.room.RoomDatabase
 import com.nanlagger.packinglist.data.database.dao.RosterDao
 import com.nanlagger.packinglist.data.database.dao.RosterItemDao
 import com.nanlagger.packinglist.data.database.entities.RosterEntity

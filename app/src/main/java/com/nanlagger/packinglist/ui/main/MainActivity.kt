@@ -1,33 +1,28 @@
 package com.nanlagger.packinglist.ui.main
 
 import android.os.Bundle
+import androidx.activity.viewModels
+import com.github.terrakok.cicerone.NavigatorHolder
 import com.nanlagger.packinglist.R
-import com.nanlagger.packinglist.di.mainModule
+import com.nanlagger.packinglist.di.MainComponentHolder
 import com.nanlagger.packinglist.navigation.AppNavigator
 import com.nanlagger.packinglist.ui.common.BaseActivity
-import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.closestKodein
-import org.kodein.di.generic.bind
-import org.kodein.di.generic.instance
-import ru.terrakok.cicerone.NavigatorHolder
+import javax.inject.Inject
 
-class MainActivity : BaseActivity(), KodeinAware {
-    private val _parentKodein by closestKodein()
-    override val kodein: Kodein = Kodein.lazy {
-        extend(_parentKodein)
-        bind() from instance(this@MainActivity)
-        import(mainModule)
-    }
+class MainActivity : BaseActivity() {
+    @Inject
+    lateinit var navigationHolder: NavigatorHolder
+    @Inject
+    lateinit var factory: MainViewModel.Factory
 
-    private val navigationHolder by instance<NavigatorHolder>()
     private val navigator: AppNavigator by lazy {
-        AppNavigator(this, supportFragmentManager, R.id.container_screen)
+        AppNavigator(this, R.id.container_screen)
     }
-    private val viewModel: MainViewModel by instance()
+    private val viewModel: MainViewModel by viewModels { factory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        MainComponentHolder.createOrGetComponent(screenName).inject(this)
         setContentView(R.layout.activity_main)
         navigationHolder.removeNavigator()
         viewModel.init()
@@ -41,5 +36,10 @@ class MainActivity : BaseActivity(), KodeinAware {
     override fun onPause() {
         super.onPause()
         navigationHolder.removeNavigator()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        MainComponentHolder.deleteComponent(screenName)
     }
 }

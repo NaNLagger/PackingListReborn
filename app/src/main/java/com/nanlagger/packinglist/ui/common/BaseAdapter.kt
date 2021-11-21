@@ -1,7 +1,7 @@
 package com.nanlagger.packinglist.ui.common
 
-import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 
 abstract class BaseAdapter<T: Any, VH: BindViewHolder<T>>: RecyclerView.Adapter<VH>() {
 

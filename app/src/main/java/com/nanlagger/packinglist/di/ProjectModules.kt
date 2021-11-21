@@ -1,56 +1,60 @@
 package com.nanlagger.packinglist.di
 
 import android.app.Application
-import android.arch.persistence.room.Room
+import androidx.room.Room
+import com.github.terrakok.cicerone.Cicerone
+import com.github.terrakok.cicerone.NavigatorHolder
+import com.github.terrakok.cicerone.Router
 import com.nanlagger.packinglist.data.database.AppDatabase
 import com.nanlagger.packinglist.data.database.dao.RosterDao
 import com.nanlagger.packinglist.data.database.dao.RosterItemDao
-import com.nanlagger.packinglist.domain.repository.RosterItemRepository
-import com.nanlagger.packinglist.domain.repository.RosterRepository
-import io.reactivex.Scheduler
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
-import org.kodein.di.Kodein
-import org.kodein.di.generic.bind
-import org.kodein.di.generic.instance
-import org.kodein.di.generic.singleton
-import ru.terrakok.cicerone.Cicerone
-import ru.terrakok.cicerone.NavigatorHolder
-import ru.terrakok.cicerone.Router
+import dagger.Module
+import dagger.Provides
 
-const val UI_THREAD = "UI_THREAD"
-const val IO_THREAD = "IO_THREAD"
+@Module
+class DatabaseModule {
 
-val databaseModule = Kodein.Module("DatabaseModule") {
+    @Provides
+    @AppScope
+    fun provideDatabase(application: Application): AppDatabase {
+        return Room.databaseBuilder(
+            application,
+            AppDatabase::class.java,
+            "data.db"
+        ).build()
+    }
 
-    bind<AppDatabase>() with singleton { Room.databaseBuilder(instance<Application>(), AppDatabase::class.java, "data.db").build() }
+    @Provides
+    @AppScope
+    fun provideRosterDao(appDatabase: AppDatabase): RosterDao {
+        return appDatabase.getRosterDao()
+    }
 
-    bind<RosterDao>() with singleton { instance<AppDatabase>().getRosterDao() }
-
-    bind<RosterItemDao>() with singleton { instance<AppDatabase>().getRosterItemDao() }
-}
-
-val navigationModule = Kodein.Module("NavigationModule") {
-
-    bind<Cicerone<Router>>() with singleton { Cicerone.create() }
-
-    bind<Router>() with singleton { instance<Cicerone<Router>>().router }
-
-    bind<NavigatorHolder>() with singleton {
-        instance<Cicerone<Router>>().navigatorHolder
+    @Provides
+    @AppScope
+    fun provideRosterItemDao(appDatabase: AppDatabase): RosterItemDao {
+        return appDatabase.getRosterItemDao()
     }
 }
 
-val schedulerModule = Kodein.Module("SchedulerModule") {
+@Module
+class NavigationModule {
 
-    bind<Scheduler>(tag = UI_THREAD) with singleton { AndroidSchedulers.mainThread() }
+    @Provides
+    @AppScope
+    fun provideCicerone(): Cicerone<Router> {
+        return Cicerone.create()
+    }
 
-    bind<Scheduler>(tag = IO_THREAD) with singleton { Schedulers.io() }
-}
+    @Provides
+    @AppScope
+    fun provideRouter(cicerone: Cicerone<Router>): Router {
+        return cicerone.router
+    }
 
-val repositoryModule = Kodein.Module("repositoryModule") {
-
-    bind<RosterRepository>() with singleton { RosterRepository(instance()) }
-
-    bind<RosterItemRepository>() with singleton { RosterItemRepository(instance()) }
+    @Provides
+    @AppScope
+    fun provideNavigationHolder(cicerone: Cicerone<Router>): NavigatorHolder {
+        return cicerone.getNavigatorHolder()
+    }
 }

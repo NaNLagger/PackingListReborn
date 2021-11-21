@@ -1,22 +1,24 @@
 package com.nanlagger.packinglist.ui.roster
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.github.terrakok.cicerone.Router
 import com.nanlagger.packinglist.domain.entities.Roster
 import com.nanlagger.packinglist.domain.entities.RosterItem
 import com.nanlagger.packinglist.domain.interactors.RosterInteractor
 import com.nanlagger.packinglist.domain.interactors.RosterItemInteractor
 import com.nanlagger.packinglist.tools.addTo
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import ru.terrakok.cicerone.Router
+import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
 class RosterViewModel(
-        private val router: Router,
-        private val rosterInteractor: RosterInteractor,
-        private val rosterItemInteractor: RosterItemInteractor
+    private val router: Router,
+    private val rosterInteractor: RosterInteractor,
+    private val rosterItemInteractor: RosterItemInteractor
 ) : ViewModel() {
 
     val rosterUI: LiveData<Roster>
@@ -40,14 +42,18 @@ class RosterViewModel(
 
     fun checkItem(rosterItem: RosterItem, isChecked: Boolean) {
         rosterItemInteractor.update(rosterItem.copy(checked = isChecked))
-                .subscribe({}, { error -> Timber.e(error) })
-                .addTo(compositeDisposable)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({}, { error -> Timber.e(error) })
+            .addTo(compositeDisposable)
     }
 
     fun newItem(name: String) {
         rosterItemInteractor.addRosterItem(RosterItem(0L, name, rosterId, false))
-                .subscribe({}, { error -> Timber.e(error) })
-                .addTo(compositeDisposable)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({}, { error -> Timber.e(error) })
+            .addTo(compositeDisposable)
     }
 
     override fun onCleared() {
@@ -56,15 +62,21 @@ class RosterViewModel(
 
     private fun loadRoster() {
         rosterInteractor.getRoster(rosterId)
-                .subscribe({
-                    roster = it
-                    rosterLiveData.value = it
-                }, { error -> Timber.e(error) })
-                .addTo(compositeDisposable)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                roster = it
+                rosterLiveData.value = it
+            }, { error -> Timber.e(error) })
+            .addTo(compositeDisposable)
     }
 
     @Suppress("UNCHECKED_CAST")
-    class Factory(private val router: Router, private val rosterInteractor: RosterInteractor, private val rosterItemInteractor: RosterItemInteractor) : ViewModelProvider.Factory {
+    class Factory(
+        private val router: Router,
+        private val rosterInteractor: RosterInteractor,
+        private val rosterItemInteractor: RosterItemInteractor
+    ) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             return if (RosterViewModel::class.java.isAssignableFrom(modelClass)) {
                 RosterViewModel(router, rosterInteractor, rosterItemInteractor) as T

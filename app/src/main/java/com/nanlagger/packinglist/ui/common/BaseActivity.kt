@@ -1,41 +1,36 @@
 package com.nanlagger.packinglist.ui.common
 
-import android.support.v7.app.AppCompatActivity
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.MultiplePermissionsReport
-import com.karumi.dexter.listener.PermissionDeniedResponse
-import com.karumi.dexter.listener.PermissionGrantedResponse
-import com.karumi.dexter.listener.multi.BaseMultiplePermissionsListener
-import com.karumi.dexter.listener.single.BasePermissionListener
+import android.os.Bundle
+import android.os.PersistableBundle
+import androidx.appcompat.app.AppCompatActivity
+import java.util.*
+
+private const val STATE_SCREEN_UID = "STATE_SCREEN_UID"
 
 abstract class BaseActivity : AppCompatActivity() {
 
-    protected fun checkPermission(permission: String, listener: (granted: Boolean) -> Unit) {
-        Dexter.withActivity(this)
-                .withPermission(permission)
-                .withListener(object : BasePermissionListener() {
-                    override fun onPermissionGranted(response: PermissionGrantedResponse?) {
-                        super.onPermissionGranted(response)
-                        listener(true)
-                    }
+    private var screenUID: String = ""
+    val screenName: String
+        get() = "${javaClass.simpleName}_$screenUID"
 
-                    override fun onPermissionDenied(response: PermissionDeniedResponse?) {
-                        super.onPermissionDenied(response)
-                        listener(false)
-                    }
-                })
-                .check()
+    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
+        super.onCreate(savedInstanceState, persistentState)
+        screenUID = savedInstanceState?.getString(STATE_SCREEN_UID) ?: UUID.randomUUID().toString()
     }
 
-    protected fun checkPermissions(vararg permissions: String, listener: (granted: Boolean) -> Unit) {
-        Dexter.withActivity(this)
-                .withPermissions(*permissions)
-                .withListener(object : BaseMultiplePermissionsListener() {
-                    override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
-                        super.onPermissionsChecked(report)
-                        listener(report?.areAllPermissionsGranted() ?: false)
-                    }
-                })
-                .check()
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(STATE_SCREEN_UID, screenUID)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (isFinishing) {
+            onFinallyFinished()
+        }
+    }
+
+    protected open fun onFinallyFinished() {
+
     }
 }

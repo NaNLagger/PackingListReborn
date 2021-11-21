@@ -1,6 +1,7 @@
 package com.nanlagger.packinglist.tools
 
-import android.support.v7.util.DiffUtil
+import androidx.recyclerview.widget.DiffUtil
+
 
 abstract class ListDiffCallback<out T>(val oldList: List<T>, val newList: List<T>) : DiffUtil.Callback() {
 

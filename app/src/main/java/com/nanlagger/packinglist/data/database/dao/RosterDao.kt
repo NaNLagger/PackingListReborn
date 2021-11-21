@@ -1,6 +1,9 @@
 package com.nanlagger.packinglist.data.database.dao
 
-import android.arch.persistence.room.*
+import androidx.room.Dao
+import androidx.room.Query
+import androidx.room.Transaction
+import androidx.room.Update
 import com.nanlagger.packinglist.data.database.entities.RosterEntity
 import com.nanlagger.packinglist.data.database.entities.RosterItemEntity
 import com.nanlagger.packinglist.data.database.entities.RosterWithInfoEntity
