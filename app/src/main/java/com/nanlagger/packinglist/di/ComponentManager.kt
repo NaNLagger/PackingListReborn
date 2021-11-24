@@ -1,6 +1,15 @@
 package com.nanlagger.packinglist.di
 
 import android.app.Application
+import com.nanlagger.packinglist.core.di.DependencyProvider
+import com.nanlagger.packinglist.features.main.di.MainComponentHolder
+import com.nanlagger.packinglist.features.main.di.MainDeps
+import com.nanlagger.packinglist.features.roster.details.di.RosterComponentHolder
+import com.nanlagger.packinglist.features.roster.details.di.RosterDeps
+import com.nanlagger.packinglist.features.roster.flow.di.RosterFlowComponentHolder
+import com.nanlagger.packinglist.features.roster.flow.di.RosterFlowDeps
+import com.nanlagger.packinglist.features.roster.list.di.RosterListComponentHolder
+import com.nanlagger.packinglist.features.roster.list.di.RosterListDeps
 
 object ComponentManager {
 
@@ -10,14 +19,19 @@ object ComponentManager {
                 return appComponent ?: error("AppComponent not initialized")
             }
         }
+        RosterFlowComponentHolder.dependencyProvider = object : DependencyProvider<RosterFlowDeps> {
+            override fun get(key: String): RosterFlowDeps {
+                return MainComponentHolder.getComponent(key)
+            }
+        }
         RosterListComponentHolder.dependencyProvider = object : DependencyProvider<RosterListDeps> {
             override fun get(key: String): RosterListDeps {
-                return MainComponentHolder.getComponent(key)
+                return RosterFlowComponentHolder.getComponent(key)
             }
         }
         RosterComponentHolder.dependencyProvider = object : DependencyProvider<RosterDeps> {
             override fun get(key: String): RosterDeps {
-                return MainComponentHolder.getComponent(key)
+                return RosterFlowComponentHolder.getComponent(key)
             }
         }
     }

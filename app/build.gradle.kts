@@ -57,6 +57,17 @@ dependencies {
     addAll(Deps.rxJava)
     addAll(Deps.dagger)
 
+    implementation(project(":utils"))
+    implementation(project(":core:common"))
+    implementation(project(":core:di"))
+    implementation(project(":features:roster:domain"))
+    implementation(project(":features:roster:data"))
+    implementation(project(":features:roster:common"))
+    implementation(project(":features:roster:roster-details-screen"))
+    implementation(project(":features:roster:roster-list-screen"))
+    implementation(project(":features:roster:roster-flow"))
+    implementation(project(":features:main"))
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")

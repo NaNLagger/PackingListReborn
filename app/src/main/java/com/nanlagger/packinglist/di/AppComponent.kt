@@ -1,10 +1,11 @@
 package com.nanlagger.packinglist.di
 
 import android.app.Application
+import com.nanlagger.packinglist.features.main.di.MainDeps
 import dagger.BindsInstance
 import dagger.Component
 
-@Component(modules = [DatabaseModule::class, NavigationModule::class])
+@Component(modules = [DatabaseModule::class, NavigationModule::class, RepositoryModule::class])
 @AppScope
 interface AppComponent : MainDeps {
 

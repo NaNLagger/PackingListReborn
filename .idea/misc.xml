@@ -3,12 +3,29 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/stepa/StudioProjects/PackingListReborn/app/src/main/res/drawable/ic_add_black_24dp.xml" value="0.37083333333333335" />
+        <entry key="..\:/Users/stepa/StudioProjects/PackingListReborn/app/src/main/res/drawable/ic_arrow_back_black_24dp.xml" value="0.37083333333333335" />
+        <entry key="..\:/Users/stepa/StudioProjects/PackingListReborn/app/src/main/res/drawable/ic_arrow_back_white_24dp.xml" value="0.37083333333333335" />
+        <entry key="..\:/Users/stepa/StudioProjects/PackingListReborn/app/src/main/res/drawable/ic_baseline_drag_indicator_24px.xml" value="0.37083333333333335" />
+        <entry key="..\:/Users/stepa/StudioProjects/PackingListReborn/app/src/main/res/drawable/ic_launcher_background.xml" value="0.37083333333333335" />
+        <entry key="..\:/Users/stepa/StudioProjects/PackingListReborn/app/src/main/res/drawable/sp_round_background_primary.xml" value="0.37083333333333335" />
         <entry key="..\:/Users/stepa/StudioProjects/PackingListReborn/app/src/main/res/layout/activity_main.xml" value="0.23703703703703705" />
         <entry key="..\:/Users/stepa/StudioProjects/PackingListReborn/app/src/main/res/layout/fragment_roster.xml" value="0.23725671918443003" />
         <entry key="..\:/Users/stepa/StudioProjects/PackingListReborn/app/src/main/res/layout/fragment_roster_list.xml" value="0.19739583333333333" />
         <entry key="..\:/Users/stepa/StudioProjects/PackingListReborn/app/src/main/res/layout/item_roster.xml" value="0.3546875" />
         <entry key="..\:/Users/stepa/StudioProjects/PackingListReborn/app/src/main/res/layout/item_roster_item.xml" value="0.3546875" />
         <entry key="..\:/Users/stepa/StudioProjects/PackingListReborn/app/src/main/res/layout/toolbar.xml" value="0.3546875" />
+        <entry key="..\:/Users/stepa/StudioProjects/PackingListReborn/core/common/src/main/res/drawable/sp_round_background_primary.xml" value="0.37083333333333335" />
+        <entry key="..\:/Users/stepa/StudioProjects/PackingListReborn/core/common/src/main/res/font/bold.xml" value="0.3848958333333333" />
+        <entry key="..\:/Users/stepa/StudioProjects/PackingListReborn/core/common/src/main/res/font/medium.xml" value="0.3848958333333333" />
+        <entry key="..\:/Users/stepa/StudioProjects/PackingListReborn/core/common/src/main/res/font/normal.xml" value="0.3848958333333333" />
+        <entry key="..\:/Users/stepa/StudioProjects/PackingListReborn/core/common/src/main/res/layout/fragment_flow.xml" value="0.3546875" />
+        <entry key="..\:/Users/stepa/StudioProjects/PackingListReborn/core/common/src/main/res/layout/toolbar.xml" value="0.3546875" />
+        <entry key="..\:/Users/stepa/StudioProjects/PackingListReborn/features/main/src/main/res/layout/activity_main.xml" value="0.3546875" />
+        <entry key="..\:/Users/stepa/StudioProjects/PackingListReborn/features/roster/roster-details-screen/src/main/res/layout/fragment_roster.xml" value="0.3546875" />
+        <entry key="..\:/Users/stepa/StudioProjects/PackingListReborn/features/roster/roster-details-screen/src/main/res/layout/item_roster_item.xml" value="0.3546875" />
+        <entry key="..\:/Users/stepa/StudioProjects/PackingListReborn/features/roster/roster-details-screen/src/main/res/layout/test.xml" value="0.3546875" />
+        <entry key="..\:/Users/stepa/StudioProjects/PackingListReborn/features/roster/roster-list-screen/src/main/res/layout/fragment_roster_list.xml" value="0.3546875" />
       </map>
     </option>
   </component>
@@ -57,7 +74,7 @@
       </value>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
