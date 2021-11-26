@@ -2,20 +2,25 @@ package com.nanlagger.packinglist.features.roster.list.ui
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.postDelayed
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.Transition
+import androidx.transition.TransitionListenerAdapter
+import androidx.transition.TransitionSet
 import com.nanlagger.packinglist.core.common.BaseFragment
+import com.nanlagger.packinglist.features.roster.common.RosterTransitionAnimationHelper
 import com.nanlagger.packinglist.features.roster.list.R
+import com.nanlagger.packinglist.features.roster.list.RosterDrawableCreator
 import com.nanlagger.packinglist.features.roster.list.databinding.FragmentRosterListBinding
 import com.nanlagger.packinglist.features.roster.list.di.RosterListComponentHolder
-import com.nanlagger.packinglist.features.roster.list.ui.adapter.RosterDiff
 import com.nanlagger.packinglist.features.roster.list.ui.adapter.RosterAdapter
+import com.nanlagger.packinglist.features.roster.list.ui.adapter.RosterDiff
 import com.nanlagger.utils.viewbinding.viewBinding
-import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
@@ -26,6 +31,12 @@ class RosterListFragment : BaseFragment() {
 
     @Inject
     lateinit var factory: RosterListViewModel.Factory
+
+    @Inject
+    lateinit var rosterTransitionAnimationHelper: RosterTransitionAnimationHelper
+
+    @Inject
+    lateinit var rosterDrawableCreator: RosterDrawableCreator
 
     private val viewModel: RosterListViewModel by viewModels { factory }
     private val binding: FragmentRosterListBinding by viewBinding(FragmentRosterListBinding::bind)
@@ -38,7 +49,7 @@ class RosterListFragment : BaseFragment() {
     }
 
     private val rosterAdapter by lazy {
-        RosterAdapter(viewModel::openRoster, itemTouchHelper)
+        RosterAdapter(viewModel::openRoster, itemTouchHelper, rosterTransitionAnimationHelper, rosterDrawableCreator)
     }
 
     private val dragAndDropCallback = object : ItemTouchHelper.Callback() {
@@ -52,7 +63,11 @@ class RosterListFragment : BaseFragment() {
             return makeMovementFlags(dragFlags, swipeFlags)
         }
 
-        override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+        override fun onMove(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder
+        ): Boolean {
             viewModel.changePriority(viewHolder.adapterPosition, target.adapterPosition)
             return true
         }
@@ -67,12 +82,6 @@ class RosterListFragment : BaseFragment() {
         }
     }
     private val itemTouchHelper = ItemTouchHelper(dragAndDropCallback)
-    val containerSharedView: View?
-        get() = rosterAdapter.containerSharedView
-    val toolbarSharedView: View?
-        get() = rosterAdapter.toolbarSharedView
-    val titleSharedView: View?
-        get() = rosterAdapter.titleSharedView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -81,13 +90,21 @@ class RosterListFragment : BaseFragment() {
         itemTouchHelper.attachToRecyclerView(binding.recyclerRosters)
         binding.buttonNewRoster.setOnClickListener { viewModel.newRoster() }
 
+        postponeEnterTransition()
+
         viewModel.rosterList.observe(viewLifecycleOwner, Observer { rostersList ->
             if (rostersList == null)
                 return@Observer
             val diffResult = DiffUtil.calculateDiff(RosterDiff(rosterAdapter.items, rostersList))
             rosterAdapter.items = rostersList
             diffResult.dispatchUpdatesTo(rosterAdapter)
+            binding.recyclerRosters.post { startPostponedEnterTransition() }
         })
+        rosterTransitionAnimationHelper.endTransitionListener = { rosterId ->
+            val indexOfFirst = rosterAdapter.items.indexOfFirst { it.id == rosterId }
+            if (indexOfFirst != -1) rosterAdapter.notifyItemChanged(indexOfFirst, Unit)
+            rosterTransitionAnimationHelper.endTransitionListener = {}
+        }
         viewModel.init()
     }
 

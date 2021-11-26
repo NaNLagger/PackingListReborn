@@ -4,6 +4,7 @@ import com.github.terrakok.cicerone.Cicerone
 import com.github.terrakok.cicerone.NavigatorHolder
 import com.github.terrakok.cicerone.Router
 import com.nanlagger.packinglist.core.di.FlowScope
+import com.nanlagger.packinglist.features.roster.common.RosterTransitionAnimationHelper
 import com.nanlagger.packinglist.features.roster.common.navigation.RosterScreenProvider
 import com.nanlagger.packinglist.features.roster.flow.RosterFlowViewModel
 import com.nanlagger.packinglist.features.roster.flow.navigation.RosterScreenProviderImpl
@@ -34,6 +35,12 @@ class RosterFlowModule {
     @Provides
     fun provideRosterScreenProvider(): RosterScreenProvider {
         return RosterScreenProviderImpl()
+    }
+
+    @Provides
+    @FlowScope
+    fun provideRosterTransitionAnimationHelper(): RosterTransitionAnimationHelper {
+        return RosterTransitionAnimationHelper()
     }
 
     @Provides
