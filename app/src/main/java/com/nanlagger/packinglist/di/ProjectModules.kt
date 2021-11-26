@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.github.terrakok.cicerone.Cicerone
 import com.github.terrakok.cicerone.NavigatorHolder
 import com.github.terrakok.cicerone.Router
+import com.nanlagger.packinglist.core.common.ResourcesProvider
 import com.nanlagger.packinglist.data.database.AppDatabase
 import com.nanlagger.packinglist.features.roster.data.dao.RosterDao
 import com.nanlagger.packinglist.features.roster.data.dao.RosterItemDao
@@ -74,5 +75,14 @@ class RepositoryModule {
     @Provides
     fun provideRosterItemRepository(rosterItemDao: RosterItemDao): RosterItemRepository {
         return RosterItemRepositoryImpl(rosterItemDao)
+    }
+}
+
+@Module(includes = [DatabaseModule::class, NavigationModule::class, RepositoryModule::class])
+class ApplicationModule {
+
+    @Provides
+    fun provideResourcesProvider(application: Application): ResourcesProvider {
+        return ResourcesProvider(application.resources)
     }
 }

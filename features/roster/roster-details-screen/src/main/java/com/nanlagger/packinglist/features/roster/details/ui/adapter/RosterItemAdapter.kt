@@ -1,8 +1,10 @@
 package com.nanlagger.packinglist.features.roster.details.ui.adapter
 
+import android.graphics.Paint
 import android.view.View
 import android.view.ViewGroup
 import com.nanlagger.packinglist.features.roster.details.R
+import com.nanlagger.packinglist.features.roster.details.databinding.ItemRosterItemBinding
 import com.nanlagger.packinglist.features.roster.domain.entities.RosterItem
 import com.nanlagger.utils.adapter.BaseAdapter
 import com.nanlagger.utils.adapter.BindViewHolder
@@ -18,16 +20,20 @@ class RosterItemAdapter(
     }
 
     inner class RosterItemViewHolder(itemView: View) : BindViewHolder<RosterItem>(itemView) {
+        private val binding = ItemRosterItemBinding.bind(itemView)
+
         override fun bind(value: RosterItem) {
-//            itemView.textName.text = value.name
-//            itemView.checkItem.isChecked = value.checked
-//            itemView.checkItem.text = value.name
-//            itemView.checkItem.setOnClickListener { checkListener(value, !value.checked) }
-//            if (value.checked) {
-//                itemView.textName.paintFlags = itemView.textName.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-//            } else {
-//                itemView.textName.paintFlags = itemView.textName.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-//            }
+            with(binding) {
+                textName.text = value.name
+                checkItem.isChecked = value.checked
+                checkItem.text = value.name
+                checkItem.setOnClickListener { checkListener(value, !value.checked) }
+                if (value.checked) {
+                    textName.paintFlags = textName.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                } else {
+                    textName.paintFlags = textName.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+                }
+            }
         }
     }
 

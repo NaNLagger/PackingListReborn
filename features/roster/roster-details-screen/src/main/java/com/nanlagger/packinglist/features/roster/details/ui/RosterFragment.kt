@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nanlagger.packinglist.core.common.BaseFragment
 import com.nanlagger.packinglist.features.roster.common.RosterSharedNames
+import com.nanlagger.packinglist.features.roster.common.RosterTransitionAnimationHelper
 import com.nanlagger.packinglist.features.roster.details.R
 import com.nanlagger.packinglist.features.roster.details.databinding.FragmentRosterBinding
 import com.nanlagger.packinglist.features.roster.details.di.RosterComponentHolder
@@ -21,11 +22,13 @@ class RosterFragment : BaseFragment(), ArgumentsHolder<Long> {
     override val layoutId: Int
         get() = R.layout.fragment_roster
 
-    val rosterId
+    private val rosterId
         get() = args
 
     @Inject
     lateinit var factory: RosterViewModel.Factory
+    @Inject
+    lateinit var rosterTransitionAnimationHelper: RosterTransitionAnimationHelper
 
     private val viewModel: RosterViewModel by viewModels { factory }
     private val binding: FragmentRosterBinding by viewBinding(FragmentRosterBinding::bind)
@@ -49,9 +52,7 @@ class RosterFragment : BaseFragment(), ArgumentsHolder<Long> {
             recyclerItems.layoutManager = LinearLayoutManager(requireContext())
             recyclerItems.adapter = rosterItemAdapter
 
-            containerTransition.transitionName = RosterSharedNames.SHARED_NAME_CONTAINER + rosterId
-            toolbarLayout.toolbar.transitionName = RosterSharedNames.SHARED_NAME_TOOLBAR + rosterId
-            textTitle.transitionName = RosterSharedNames.SHARED_NAME_TITLE + rosterId
+            rosterTransitionAnimationHelper.setSharedName(rosterId, containerTransition, toolbarLayout.toolbar, textTitle)
 
             buttonNewItem.setOnClickListener { viewModel.newItem("Item ${Random(System.currentTimeMillis()).nextInt()}") }
         }

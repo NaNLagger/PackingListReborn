@@ -5,7 +5,7 @@ import com.nanlagger.packinglist.features.main.di.MainDeps
 import dagger.BindsInstance
 import dagger.Component
 
-@Component(modules = [DatabaseModule::class, NavigationModule::class, RepositoryModule::class])
+@Component(modules = [ApplicationModule::class])
 @AppScope
 interface AppComponent : MainDeps {
 
