@@ -13,6 +13,7 @@ import androidx.transition.Transition
 import androidx.transition.TransitionListenerAdapter
 import androidx.transition.TransitionSet
 import com.nanlagger.packinglist.core.common.BaseFragment
+import com.nanlagger.packinglist.features.editName.ui.EditNameDialog
 import com.nanlagger.packinglist.features.roster.common.RosterTransitionAnimationHelper
 import com.nanlagger.packinglist.features.roster.list.R
 import com.nanlagger.packinglist.features.roster.list.RosterDrawableCreator
@@ -20,6 +21,7 @@ import com.nanlagger.packinglist.features.roster.list.databinding.FragmentRoster
 import com.nanlagger.packinglist.features.roster.list.di.RosterListComponentHolder
 import com.nanlagger.packinglist.features.roster.list.ui.adapter.RosterAdapter
 import com.nanlagger.packinglist.features.roster.list.ui.adapter.RosterDiff
+import com.nanlagger.packinglist.features.roster.list.ui.adapter.RosterListUpdateCallback
 import com.nanlagger.utils.viewbinding.viewBinding
 import java.util.*
 import javax.inject.Inject
@@ -88,7 +90,7 @@ class RosterListFragment : BaseFragment() {
         binding.recyclerRosters.layoutManager = LinearLayoutManager(context)
         binding.recyclerRosters.adapter = rosterAdapter
         itemTouchHelper.attachToRecyclerView(binding.recyclerRosters)
-        binding.buttonNewRoster.setOnClickListener { viewModel.newRoster() }
+        binding.buttonNewRoster.setOnClickListener { openEditNameDialog() }
 
         postponeEnterTransition()
 
@@ -97,7 +99,9 @@ class RosterListFragment : BaseFragment() {
                 return@Observer
             val diffResult = DiffUtil.calculateDiff(RosterDiff(rosterAdapter.items, rostersList))
             rosterAdapter.items = rostersList
-            diffResult.dispatchUpdatesTo(rosterAdapter)
+            diffResult.dispatchUpdatesTo(
+                RosterListUpdateCallback(rosterAdapter) { binding.recyclerRosters.smoothScrollToPosition(it) }
+            )
             binding.recyclerRosters.post { startPostponedEnterTransition() }
         })
         rosterTransitionAnimationHelper.endTransitionListener = { rosterId ->
@@ -105,7 +109,7 @@ class RosterListFragment : BaseFragment() {
             if (indexOfFirst != -1) rosterAdapter.notifyItemChanged(indexOfFirst, Unit)
             rosterTransitionAnimationHelper.endTransitionListener = {}
         }
-        viewModel.init()
+        viewModel.onAttach()
     }
 
     override fun onBackPressed() {
@@ -117,7 +121,14 @@ class RosterListFragment : BaseFragment() {
         RosterListComponentHolder.deleteComponent(screenName)
     }
 
+    private fun openEditNameDialog() {
+        EditNameDialog.newInstance()
+            .show(childFragmentManager, EDIT_NAME_DIALOG_TAG)
+    }
+
     companion object {
+        private const val EDIT_NAME_DIALOG_TAG = "EDIT_NAME_DIALOG_TAG"
+
         fun newInstance() = RosterListFragment()
     }
 }

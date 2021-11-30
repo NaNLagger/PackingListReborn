@@ -2,6 +2,8 @@ package com.nanlagger.packinglist.di
 
 import android.app.Application
 import com.nanlagger.packinglist.core.di.DependencyProvider
+import com.nanlagger.packinglist.features.editName.di.EditNameComponentHolder
+import com.nanlagger.packinglist.features.editName.di.EditNameDeps
 import com.nanlagger.packinglist.features.main.di.MainComponentHolder
 import com.nanlagger.packinglist.features.main.di.MainDeps
 import com.nanlagger.packinglist.features.roster.details.di.RosterComponentHolder
@@ -32,6 +34,11 @@ object ComponentManager {
         RosterComponentHolder.dependencyProvider = object : DependencyProvider<RosterDeps> {
             override fun get(key: String): RosterDeps {
                 return RosterFlowComponentHolder.getComponent(key)
+            }
+        }
+        EditNameComponentHolder.dependencyProvider = object : DependencyProvider<EditNameDeps> {
+            override fun get(key: String): EditNameDeps {
+                return RosterListComponentHolder.getComponentOrNull(key) ?: RosterComponentHolder.getComponent(key)
             }
         }
     }

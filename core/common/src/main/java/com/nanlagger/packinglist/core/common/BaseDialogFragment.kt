@@ -1,17 +1,13 @@
 package com.nanlagger.packinglist.core.common
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import com.google.android.material.snackbar.Snackbar
+import androidx.fragment.app.DialogFragment
 import timber.log.Timber
 import java.util.*
 
 private const val STATE_SCREEN_UID = "STATE_SCREEN_UID"
 
-abstract class BaseFragment : Fragment(), OnBackPressedListener {
-    abstract val layoutId: Int
+abstract class BaseDialogFragment : DialogFragment() {
 
     private var instanceStateSaved: Boolean = false
     private var screenUID: String = ""
@@ -26,9 +22,6 @@ abstract class BaseFragment : Fragment(), OnBackPressedListener {
         super.onCreate(savedInstanceState)
         screenUID = savedInstanceState?.getString(STATE_SCREEN_UID) ?: UUID.randomUUID().toString()
     }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
-        inflater.inflate(layoutId, container, false)!!
 
     override fun onStart() {
         super.onStart()
@@ -78,11 +71,4 @@ abstract class BaseFragment : Fragment(), OnBackPressedListener {
     }
 
     protected open fun onFinallyFinished() {}
-
-    protected fun showSnackMessage(message: String, duration: Int = Snackbar.LENGTH_LONG) {
-        view?.let {
-            val snackbar = Snackbar.make(it, message, duration)
-            snackbar.show()
-        }
-    }
 }

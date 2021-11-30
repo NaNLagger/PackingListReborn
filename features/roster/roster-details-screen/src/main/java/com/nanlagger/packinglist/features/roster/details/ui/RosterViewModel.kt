@@ -5,6 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.github.terrakok.cicerone.Router
+import com.nanlagger.packinglist.core.common.BaseViewModel
+import com.nanlagger.packinglist.features.editName.domain.EditNameInfo
+import com.nanlagger.packinglist.features.editName.domain.EditNameInteractorImpl
 import com.nanlagger.packinglist.features.roster.domain.entities.Roster
 import com.nanlagger.packinglist.features.roster.domain.entities.RosterItem
 import com.nanlagger.packinglist.features.roster.domain.interactors.RosterInteractor
@@ -18,8 +21,9 @@ import timber.log.Timber
 class RosterViewModel(
     private val router: Router,
     private val rosterInteractor: RosterInteractor,
-    private val rosterItemInteractor: RosterItemInteractor
-) : ViewModel() {
+    private val rosterItemInteractor: RosterItemInteractor,
+    private val editNameInteractor: EditNameInteractorImpl
+) : BaseViewModel(router) {
 
     val rosterUI: LiveData<Roster>
         get() = rosterLiveData
@@ -30,14 +34,16 @@ class RosterViewModel(
     private val rosterLiveData: MutableLiveData<Roster> = MutableLiveData()
 
     fun init(id: Long) {
-        if (rosterId != id) {
-            this.rosterId = id
-            loadRoster()
-        }
+        this.rosterId = id
+        onAttach()
     }
 
-    fun back() {
-        router.exit()
+    override fun onFirstAttach() {
+        loadRoster()
+        editNameInteractor.setInfo(EditNameInfo("Roster Item Name"))
+        editNameInteractor.observeName()
+            .subscribe { newItem(it) }
+            .addTo(compositeDisposable)
     }
 
     fun checkItem(rosterItem: RosterItem, isChecked: Boolean) {
@@ -75,11 +81,12 @@ class RosterViewModel(
     class Factory(
         private val router: Router,
         private val rosterInteractor: RosterInteractor,
-        private val rosterItemInteractor: RosterItemInteractor
+        private val rosterItemInteractor: RosterItemInteractor,
+        private val editNameInteractor: EditNameInteractorImpl
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             return if (RosterViewModel::class.java.isAssignableFrom(modelClass)) {
-                RosterViewModel(router, rosterInteractor, rosterItemInteractor) as T
+                RosterViewModel(router, rosterInteractor, rosterItemInteractor, editNameInteractor) as T
             } else {
                 throw RuntimeException("Cannot create an instance of $modelClass")
             }

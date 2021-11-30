@@ -7,6 +7,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nanlagger.packinglist.core.common.BaseFragment
+import com.nanlagger.packinglist.features.editName.ui.EditNameDialog
 import com.nanlagger.packinglist.features.roster.common.RosterSharedNames
 import com.nanlagger.packinglist.features.roster.common.RosterTransitionAnimationHelper
 import com.nanlagger.packinglist.features.roster.details.R
@@ -54,7 +55,7 @@ class RosterFragment : BaseFragment(), ArgumentsHolder<Long> {
 
             rosterTransitionAnimationHelper.setSharedName(rosterId, containerTransition, toolbarLayout.toolbar, textTitle)
 
-            buttonNewItem.setOnClickListener { viewModel.newItem("Item ${Random(System.currentTimeMillis()).nextInt()}") }
+            buttonNewItem.setOnClickListener { openEditNameDialog() }
         }
 
         viewModel.init(rosterId)
@@ -77,7 +78,14 @@ class RosterFragment : BaseFragment(), ArgumentsHolder<Long> {
         RosterComponentHolder.deleteComponent(screenName)
     }
 
+    private fun openEditNameDialog() {
+        EditNameDialog.newInstance()
+            .show(childFragmentManager, EDIT_NAME_DIALOG_TAG)
+    }
+
     companion object {
+        private const val EDIT_NAME_DIALOG_TAG = "EDIT_NAME_DIALOG_TAG"
+
         fun newInstance(rosterId: Long): RosterFragment {
             return RosterFragment().also { it.args = rosterId }
         }

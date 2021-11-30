@@ -18,6 +18,10 @@ abstract class ComponentHolder<Component, Deps : Dependencies> {
         return components[key] ?: error("Component with key = $key doesn't exist")
     }
 
+    fun getComponentOrNull(key: String): Component? {
+        return components[key]
+    }
+
     fun deleteComponent(key: String) {
         components.remove(key)
     }

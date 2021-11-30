@@ -11,4 +11,5 @@ class RosterScreenProviderImpl: RosterScreenProvider {
     override fun getRosterDetailsScreen(rosterId: Long): Screen {
         return RosterScreen(rosterId)
     }
+
 }

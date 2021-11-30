@@ -24,6 +24,7 @@ dependencies {
     implementation(project(":utils"))
     implementation(project(":core:common"))
     implementation(project(":core:di"))
+    implementation(project(":features:edit-name"))
     implementation(project(":features:roster:domain"))
     implementation(project(":features:roster:common"))
 }

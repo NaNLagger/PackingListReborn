@@ -5,9 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.github.terrakok.cicerone.Router
+import com.nanlagger.packinglist.core.common.BaseViewModel
+import com.nanlagger.packinglist.features.editName.domain.EditNameInfo
 import com.nanlagger.packinglist.features.roster.common.navigation.RosterScreenProvider
 import com.nanlagger.packinglist.features.roster.domain.entities.Roster
 import com.nanlagger.packinglist.features.roster.domain.interactors.RosterInteractor
+import com.nanlagger.packinglist.features.editName.domain.EditNameInteractorImpl
 import com.nanlagger.utils.extensions.addTo
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -17,8 +20,9 @@ import timber.log.Timber
 class RosterListViewModel(
     private val router: Router,
     private val rosterInteractor: RosterInteractor,
-    private val rosterScreenProvider: RosterScreenProvider
-) : ViewModel() {
+    private val rosterScreenProvider: RosterScreenProvider,
+    private val editNameInteractor: EditNameInteractorImpl
+) : BaseViewModel(router) {
 
     val rosterList: LiveData<List<Roster>>
         get() = rosterListLiveData
@@ -27,21 +31,12 @@ class RosterListViewModel(
     private var rosterItems: MutableList<Roster> = mutableListOf()
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
-    private var firstAttach = true
 
-    fun init() {
-        if (firstAttach) {
-            loadRosters()
-        }
-        firstAttach = false
-    }
-
-    fun newRoster() {
-        val rosterIndex = (rosterItems.maxByOrNull { it.priority }?.priority ?: 0) + 1
-        rosterInteractor.addRoster(Roster(0, "Roster $rosterIndex", rosterIndex, emptyList()))
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({}, { error -> Timber.e(error) })
+    override fun onFirstAttach() {
+        loadRosters()
+        editNameInteractor.setInfo(EditNameInfo("Roster Name"))
+        editNameInteractor.observeName()
+            .subscribe { newRoster(it) }
             .addTo(compositeDisposable)
     }
 
@@ -94,24 +89,30 @@ class RosterListViewModel(
             .addTo(compositeDisposable)
     }
 
+    private fun newRoster(name: String) {
+        val rosterIndex = (rosterItems.maxByOrNull { it.priority }?.priority ?: 0) + 1
+        rosterInteractor.addRoster(Roster(0, name, rosterIndex, emptyList()))
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({}, { error -> Timber.e(error) })
+            .addTo(compositeDisposable)
+    }
+
     override fun onCleared() {
         super.onCleared()
         compositeDisposable.dispose()
     }
 
-    fun back() {
-        router.exit()
-    }
-
     @Suppress("UNCHECKED_CAST")
     class Factory(
-        val router: Router,
-        val interactor: RosterInteractor,
-        val rosterScreenProvider: RosterScreenProvider
+        private val router: Router,
+        private val interactor: RosterInteractor,
+        private val rosterScreenProvider: RosterScreenProvider,
+        private val editNameInteractorImpl: EditNameInteractorImpl
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             return if (RosterListViewModel::class.java.isAssignableFrom(modelClass)) {
-                RosterListViewModel(router, interactor, rosterScreenProvider) as T
+                RosterListViewModel(router, interactor, rosterScreenProvider, editNameInteractorImpl) as T
             } else {
                 throw RuntimeException("Cannot create an instance of $modelClass")
             }

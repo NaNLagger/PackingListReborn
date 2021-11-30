@@ -1,12 +1,13 @@
 package com.nanlagger.packinglist.features.roster.list.di
 
 import com.nanlagger.packinglist.core.di.ScreenScope
+import com.nanlagger.packinglist.features.editName.di.EditNameDeps
 import com.nanlagger.packinglist.features.roster.list.ui.RosterListFragment
 import dagger.Component
 
 @Component(modules = [RosterListModule::class], dependencies = [RosterListDeps::class])
 @ScreenScope
-interface RosterListComponent {
+interface RosterListComponent : EditNameDeps {
 
     fun inject(fragment: RosterListFragment)
 
