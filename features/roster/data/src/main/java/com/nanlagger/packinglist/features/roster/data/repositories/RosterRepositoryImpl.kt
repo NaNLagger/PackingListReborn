@@ -1,17 +1,18 @@
 package com.nanlagger.packinglist.features.roster.data.repositories
 
 import com.nanlagger.packinglist.features.roster.data.dao.RosterDao
+import com.nanlagger.packinglist.features.roster.data.entities.RosterEntity
 import com.nanlagger.packinglist.features.roster.domain.entities.Roster
 import com.nanlagger.packinglist.features.roster.domain.entities.RosterItem
 import com.nanlagger.packinglist.features.roster.domain.repositories.RosterRepository
-import io.reactivex.Completable
-import io.reactivex.Flowable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class RosterRepositoryImpl(
     private val rosterDao: RosterDao
-): RosterRepository {
+) : RosterRepository {
 
-    override fun getRosters(): Flowable<List<Roster>> {
+    override fun getRosters(): Flow<List<Roster>> {
         return rosterDao.getRostersWithItems()
             .map { rosterEntities ->
                 rosterEntities.map { entity ->
@@ -22,36 +23,32 @@ class RosterRepositoryImpl(
             }
     }
 
-    override fun addRoster(roster: Roster): Completable {
-        return Completable.fromCallable { rosterDao.insert(
-            com.nanlagger.packinglist.features.roster.data.entities.RosterEntity(
+    override suspend fun addRoster(roster: Roster) {
+        rosterDao.insert(
+            RosterEntity(
                 roster.id,
                 roster.name,
                 roster.priority
             )
-        ) }
+        )
     }
 
-    override fun deleteRoster(id: Long): Completable {
-        return Completable.fromCallable { rosterDao.delete(
-            com.nanlagger.packinglist.features.roster.data.entities.RosterEntity(
-                id
-            )
-        ) }
+    override suspend fun deleteRoster(id: Long) {
+        rosterDao.delete(RosterEntity(id))
     }
 
-    override fun updateRosters(rosters: List<Roster>): Completable {
+    override suspend fun updateRosters(rosters: List<Roster>) {
         val rosterEntities = rosters.map { roster ->
-            com.nanlagger.packinglist.features.roster.data.entities.RosterEntity(
+            RosterEntity(
                 roster.id,
                 roster.name,
                 roster.priority
             )
         }
-        return Completable.fromCallable { rosterDao.updateAll(rosterEntities) }
+        rosterDao.updateAll(rosterEntities)
     }
 
-    override fun getRoster(id: Long): Flowable<Roster> {
+    override fun getRoster(id: Long): Flow<Roster> {
         return rosterDao.getRosterWithItems(id)
             .map { rosterWithItemsEntity ->
                 Roster(rosterWithItemsEntity.roster.id,

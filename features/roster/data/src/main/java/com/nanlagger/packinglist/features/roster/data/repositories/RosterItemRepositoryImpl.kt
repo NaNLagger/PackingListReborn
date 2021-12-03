@@ -3,15 +3,15 @@ package com.nanlagger.packinglist.features.roster.data.repositories
 import com.nanlagger.packinglist.features.roster.data.dao.RosterItemDao
 import com.nanlagger.packinglist.features.roster.domain.entities.RosterItem
 import com.nanlagger.packinglist.features.roster.domain.repositories.RosterItemRepository
-import io.reactivex.Completable
-import io.reactivex.Flowable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 
 class RosterItemRepositoryImpl(
     private val rosterItemDao: RosterItemDao
-): RosterItemRepository {
+) : RosterItemRepository {
 
-    override fun getItems(rosterId: Long): Flowable<List<RosterItem>> {
+    override fun getItems(rosterId: Long): Flow<List<RosterItem>> {
         return rosterItemDao.getItemsByRosterId(rosterId)
             .map { rosterItems ->
                 rosterItems.map {
@@ -20,37 +20,33 @@ class RosterItemRepositoryImpl(
             }
     }
 
-    override fun addItem(rosterItem: RosterItem): Completable {
-        return Completable.fromCallable {
-            rosterItemDao.insert(
-                com.nanlagger.packinglist.features.roster.data.entities.RosterItemEntity(
-                    0L,
-                    rosterItem.name,
-                    rosterItem.rosterId,
-                    rosterItem.checked
-                )
+    override suspend fun addItem(rosterItem: RosterItem) {
+        rosterItemDao.insert(
+            com.nanlagger.packinglist.features.roster.data.entities.RosterItemEntity(
+                0L,
+                rosterItem.name,
+                rosterItem.rosterId,
+                rosterItem.checked
             )
-        }
+        )
     }
 
-    override fun deleteItem(id: Long): Completable {
-        return Completable.fromCallable { rosterItemDao.delete(
+    override suspend fun deleteItem(id: Long) {
+        rosterItemDao.delete(
             com.nanlagger.packinglist.features.roster.data.entities.RosterItemEntity(
                 id
             )
-        ) }
+        )
     }
 
-    override fun updateItem(rosterItem: RosterItem): Completable {
-        return Completable.fromCallable {
-            rosterItemDao.update(
-                com.nanlagger.packinglist.features.roster.data.entities.RosterItemEntity(
-                    rosterItem.id,
-                    rosterItem.name,
-                    rosterItem.rosterId,
-                    rosterItem.checked
-                )
+    override suspend fun updateItem(rosterItem: RosterItem) {
+        rosterItemDao.update(
+            com.nanlagger.packinglist.features.roster.data.entities.RosterItemEntity(
+                rosterItem.id,
+                rosterItem.name,
+                rosterItem.rosterId,
+                rosterItem.checked
             )
-        }
+        )
     }
 }

@@ -1,26 +1,18 @@
 package com.nanlagger.packinglist.features.editName.ui
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.github.terrakok.cicerone.Router
-import com.nanlagger.packinglist.core.common.BaseViewModel
+import androidx.lifecycle.viewModelScope
 import com.nanlagger.packinglist.features.editName.domain.EditNameInfo
 import com.nanlagger.packinglist.features.editName.domain.EditNameInteractor
+import kotlinx.coroutines.flow.*
 
 class EditNameViewModel(
     private val editNameInteractor: EditNameInteractor
 ) : ViewModel() {
 
-    val info: LiveData<EditNameInfo>
-        get() = infoMutableLiveData
-
-    private val infoMutableLiveData: MutableLiveData<EditNameInfo> = MutableLiveData()
-
-    fun onAttach() {
-        infoMutableLiveData.value = editNameInteractor.getInfo()
-    }
+    val uiState: StateFlow<EditNameInfo> = flowOf(editNameInteractor.getInfo())
+        .stateIn(viewModelScope, SharingStarted.Lazily, EditNameInfo(""))
 
     fun saveName(name: String) {
         editNameInteractor.setName(name)

@@ -54,7 +54,6 @@ dependencies {
     addAll(Deps.lifecycle)
     addAll(Deps.androidUi)
     addAll(Deps.room)
-    addAll(Deps.rxJava)
     addAll(Deps.dagger)
 
     implementation(project(":utils"))

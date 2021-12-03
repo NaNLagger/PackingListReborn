@@ -11,7 +11,6 @@ android {
 dependencies {
     implementation(Deps.kotlin)
 
-    addAll(Deps.rxJava)
     addAll(Deps.lifecycle)
     addAll(Deps.androidUi)
 }

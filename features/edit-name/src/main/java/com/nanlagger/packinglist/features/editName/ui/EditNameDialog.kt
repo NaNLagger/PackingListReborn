@@ -9,11 +9,14 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.nanlagger.packinglist.core.common.BaseDialogFragment
 import com.nanlagger.packinglist.features.editName.R
 import com.nanlagger.packinglist.features.editName.databinding.FragmentEditNameBinding
 import com.nanlagger.packinglist.features.editName.di.EditNameComponentHolder
 import com.nanlagger.utils.viewbinding.viewBinding
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class EditNameDialog : BaseDialogFragment() {
@@ -36,10 +39,12 @@ class EditNameDialog : BaseDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.onAttach()
-        viewModel.info.observe(viewLifecycleOwner) {
-            dialog?.setTitle(it.title)
-            binding?.editName?.setText(it.name)
+        lifecycleScope.launchWhenStarted {
+            viewModel.uiState
+                .collect {
+                    dialog?.setTitle(it.title)
+                    binding?.editName?.setText(it.name)
+                }
         }
         binding?.editName?.setOnEditorActionListener { _, actionId, _ ->
             if(actionId == EditorInfo.IME_ACTION_DONE){

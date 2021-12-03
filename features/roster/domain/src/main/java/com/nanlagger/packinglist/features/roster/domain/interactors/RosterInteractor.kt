@@ -2,30 +2,29 @@ package com.nanlagger.packinglist.features.roster.domain.interactors
 
 import com.nanlagger.packinglist.features.roster.domain.entities.Roster
 import com.nanlagger.packinglist.features.roster.domain.repositories.RosterRepository
-import io.reactivex.Completable
-import io.reactivex.Flowable
+import kotlinx.coroutines.flow.Flow
 
 class RosterInteractor(
     private val rosterRepository: RosterRepository
 ) {
 
-    fun getRoster(id: Long): Flowable<Roster> {
+    fun getRoster(id: Long): Flow<Roster> {
         return rosterRepository.getRoster(id)
     }
 
-    fun getRosters(): Flowable<List<Roster>> {
+    fun getRosters(): Flow<List<Roster>> {
         return rosterRepository.getRosters()
     }
 
-    fun changePriority(rosters: List<Roster>): Completable {
+    suspend fun changePriority(rosters: List<Roster>) {
         return rosterRepository.updateRosters(rosters)
     }
 
-    fun addRoster(roster: Roster): Completable {
+    suspend fun addRoster(roster: Roster) {
         return rosterRepository.addRoster(roster)
     }
 
-    fun deleteRoster(id: Long): Completable {
+    suspend fun deleteRoster(id: Long) {
         return rosterRepository.deleteRoster(id)
     }
 }

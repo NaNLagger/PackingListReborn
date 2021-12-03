@@ -5,6 +5,7 @@ import android.view.View
 import androidx.core.view.postDelayed
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,6 +24,8 @@ import com.nanlagger.packinglist.features.roster.list.ui.adapter.RosterAdapter
 import com.nanlagger.packinglist.features.roster.list.ui.adapter.RosterDiff
 import com.nanlagger.packinglist.features.roster.list.ui.adapter.RosterListUpdateCallback
 import com.nanlagger.utils.viewbinding.viewBinding
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
@@ -94,16 +97,16 @@ class RosterListFragment : BaseFragment() {
 
         postponeEnterTransition()
 
-        viewModel.rosterList.observe(viewLifecycleOwner, Observer { rostersList ->
-            if (rostersList == null)
-                return@Observer
-            val diffResult = DiffUtil.calculateDiff(RosterDiff(rosterAdapter.items, rostersList))
-            rosterAdapter.items = rostersList
-            diffResult.dispatchUpdatesTo(
-                RosterListUpdateCallback(rosterAdapter) { binding.recyclerRosters.smoothScrollToPosition(it) }
-            )
-            binding.recyclerRosters.post { startPostponedEnterTransition() }
-        })
+        lifecycleScope.launchWhenStarted {
+            viewModel.uiState.collect { rostersList ->
+                val diffResult = DiffUtil.calculateDiff(RosterDiff(rosterAdapter.items, rostersList))
+                rosterAdapter.items = rostersList
+                diffResult.dispatchUpdatesTo(
+                    RosterListUpdateCallback(rosterAdapter) { binding.recyclerRosters.smoothScrollToPosition(it) }
+                )
+                binding.recyclerRosters.post { startPostponedEnterTransition() }
+            }
+        }
         rosterTransitionAnimationHelper.endTransitionListener = { rosterId ->
             val indexOfFirst = rosterAdapter.items.indexOfFirst { it.id == rosterId }
             if (indexOfFirst != -1) rosterAdapter.notifyItemChanged(indexOfFirst, Unit)

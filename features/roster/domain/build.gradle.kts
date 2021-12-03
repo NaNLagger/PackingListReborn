@@ -9,5 +9,5 @@ java {
 }
 
 dependencies {
-    implementation(Deps.rxJava2)
+    implementation(Deps.coroutines)
 }

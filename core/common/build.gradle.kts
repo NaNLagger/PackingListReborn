@@ -18,7 +18,6 @@ dependencies {
 
     addAll(Deps.lifecycle)
     addAll(Deps.androidUi)
-    addAll(Deps.rxJava)
 
     implementation(project(":utils"))
 }

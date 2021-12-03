@@ -2,17 +2,16 @@ package com.nanlagger.packinglist.features.roster.domain.interactors
 
 import com.nanlagger.packinglist.features.roster.domain.entities.RosterItem
 import com.nanlagger.packinglist.features.roster.domain.repositories.RosterItemRepository
-import io.reactivex.Completable
 
 class RosterItemInteractor(
     private val rosterItemRepository: RosterItemRepository
 ) {
 
-    fun addRosterItem(rosterItem: RosterItem): Completable {
+    suspend fun addRosterItem(rosterItem: RosterItem) {
         return rosterItemRepository.addItem(rosterItem)
     }
 
-    fun update(rosterItem: RosterItem): Completable {
+    suspend fun update(rosterItem: RosterItem) {
         return rosterItemRepository.updateItem(rosterItem)
     }
 }

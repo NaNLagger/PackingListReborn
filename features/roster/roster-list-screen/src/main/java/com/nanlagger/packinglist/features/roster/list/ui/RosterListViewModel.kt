@@ -1,20 +1,16 @@
 package com.nanlagger.packinglist.features.roster.list.ui
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import com.github.terrakok.cicerone.Router
 import com.nanlagger.packinglist.core.common.BaseViewModel
 import com.nanlagger.packinglist.features.editName.domain.EditNameInfo
+import com.nanlagger.packinglist.features.editName.domain.EditNameInteractorImpl
 import com.nanlagger.packinglist.features.roster.common.navigation.RosterScreenProvider
 import com.nanlagger.packinglist.features.roster.domain.entities.Roster
 import com.nanlagger.packinglist.features.roster.domain.interactors.RosterInteractor
-import com.nanlagger.packinglist.features.editName.domain.EditNameInteractorImpl
-import com.nanlagger.utils.extensions.addTo
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class RosterListViewModel(
@@ -24,20 +20,18 @@ class RosterListViewModel(
     private val editNameInteractor: EditNameInteractorImpl
 ) : BaseViewModel(router) {
 
-    val rosterList: LiveData<List<Roster>>
-        get() = rosterListLiveData
+    val uiState: StateFlow<List<Roster>>
+        get() = _uiState.asStateFlow()
 
-    private val rosterListLiveData: MutableLiveData<List<Roster>> = MutableLiveData()
-    private var rosterItems: MutableList<Roster> = mutableListOf()
-
-    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
+    private val _uiState: MutableStateFlow<List<Roster>> = MutableStateFlow(mutableListOf())
 
     override fun onFirstAttach() {
         loadRosters()
         editNameInteractor.setInfo(EditNameInfo("Roster Name"))
-        editNameInteractor.observeName()
-            .subscribe { newRoster(it) }
-            .addTo(compositeDisposable)
+        viewModelScope.launch {
+            editNameInteractor.observeName()
+                .collect { newRoster(it) }
+        }
     }
 
     fun openRoster(roster: Roster) {
@@ -45,13 +39,15 @@ class RosterListViewModel(
     }
 
     fun changePriority(oldPosition: Int, newPosition: Int) {
+        val rosterItems = _uiState.value.toMutableList()
         val roster = rosterItems[oldPosition]
         rosterItems.removeAt(oldPosition)
         rosterItems.add(newPosition, roster)
-        rosterListLiveData.value = rosterItems.toList()
+        _uiState.value = rosterItems.toList()
     }
 
     fun saveOrder() {
+        val rosterItems = _uiState.value
         val changedRosters = rosterItems
             .filterIndexed { index, roster ->
                 val nIndex = rosterItems.size - index
@@ -62,45 +58,36 @@ class RosterListViewModel(
                 isChanged
             }
         if (changedRosters.isNotEmpty()) {
-            rosterInteractor.changePriority(changedRosters)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({}, { error -> Timber.e(error) })
-                .addTo(compositeDisposable)
+            viewModelScope.launch(Dispatchers.IO) {
+                rosterInteractor.changePriority(changedRosters)
+            }
         }
     }
 
     fun deleteRoster(position: Int) {
-        rosterInteractor.deleteRoster(rosterItems[position].id)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({}, { error -> Timber.e(error) })
-            .addTo(compositeDisposable)
+        viewModelScope.launch(Dispatchers.IO) {
+            val rosterItems = _uiState.value
+            rosterInteractor.deleteRoster(rosterItems[position].id)
+        }
     }
 
     private fun loadRosters() {
-        rosterInteractor.getRosters()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ rosters ->
-                rosterItems = rosters.asSequence().sortedByDescending { it.priority }.toMutableList()
-                rosterListLiveData.value = rosterItems.toList()
-            }, { error -> Timber.e(error) })
-            .addTo(compositeDisposable)
+        viewModelScope.launch {
+            rosterInteractor.getRosters()
+                .flowOn(Dispatchers.IO)
+                .catch { error -> Timber.e(error) }
+                .collect { rosters ->
+                    _uiState.value = rosters.asSequence().sortedByDescending { it.priority }.toList()
+                }
+        }
     }
 
     private fun newRoster(name: String) {
+        val rosterItems = _uiState.value
         val rosterIndex = (rosterItems.maxByOrNull { it.priority }?.priority ?: 0) + 1
-        rosterInteractor.addRoster(Roster(0, name, rosterIndex, emptyList()))
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({}, { error -> Timber.e(error) })
-            .addTo(compositeDisposable)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        compositeDisposable.dispose()
+        viewModelScope.launch(Dispatchers.IO) {
+            rosterInteractor.addRoster(Roster(0, name, rosterIndex, emptyList()))
+        }
     }
 
     @Suppress("UNCHECKED_CAST")

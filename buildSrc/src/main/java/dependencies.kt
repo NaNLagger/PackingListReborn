@@ -19,16 +19,16 @@ object Deps {
 
     const val roomRuntime = "androidx.room:room-runtime:${Versions.room}"
     const val roomCompiler = "androidx.room:room-compiler:${Versions.room}"
-    const val roomRxJava = "androidx.room:room-rxjava2:${Versions.room}"
-
-    const val rxJava2 = "io.reactivex.rxjava2:rxjava:2.2.9"
-    const val rxAndroid = "io.reactivex.rxjava2:rxandroid:2.1.0"
+    const val roomKtx = "androidx.room:room-ktx:${Versions.room}"
 
     const val dagger2 = "com.google.dagger:dagger:${Versions.dagger}"
     const val dagger2Compiler = "com.google.dagger:dagger-compiler:${Versions.dagger}"
 
     const val fragmentKtx = "androidx.fragment:fragment-ktx:${Versions.fragmentKtx}"
     const val activityKtx = "androidx.activity:activity-ktx:${Versions.activityKtx}"
+
+    const val androidCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.coroutines}"
+    const val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}"
 
     val lifecycle = mapOf(
         "implementation" to lifecycleViewmodelKtx,
@@ -46,13 +46,8 @@ object Deps {
 
     val room = mapOf(
         "implementation" to roomRuntime,
-        "implementation" to roomRxJava,
+        "implementation" to roomKtx,
         "kapt" to roomCompiler
-    )
-
-    val rxJava = mapOf(
-        "implementation" to rxJava2,
-        "implementation" to rxAndroid,
     )
 
     val dagger = mapOf(
